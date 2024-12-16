@@ -1,5 +1,4 @@
-
-all: prettier format lint-fix test
+all: prettier format check lint-fix test
 .PHONY: all
 
 format:
@@ -30,7 +29,6 @@ lint-fix:
 	@cargo clippy --all --fix --allow-dirty --allow-staged
 .PHONY: lint-fix
 
-
 test:
 	@cargo test
 .PHONY: test
@@ -46,6 +44,7 @@ duplexscan:
 duplexscan-glibc:
 	@docker build --progress=plain -f glibc.Dockerfile --output type=local,dest=. .
 .PHONY: duplexscan-glibc
+
 %:
 	@:
 
