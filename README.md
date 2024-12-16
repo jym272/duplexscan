@@ -6,6 +6,8 @@ DuplexScan is a high-performance contact deduplication tool written in Rust that
 It uses advanced string similarity algorithms and parallel processing to efficiently detect and
 score similar contact records on a scale from **0 to 1000**.
 
+<small>_This project features a comprehensive ci/cd pipeline, see https://github.com/jym272/duplexscan/actions for details_</small>
+
 ## Features
 
 - 🚀 Fast parallel processing using Rayon

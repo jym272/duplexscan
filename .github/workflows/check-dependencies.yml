@@ -11,9 +11,6 @@ defaults:
   run:
     shell: bash
 
-# *************************   TRIGGERING FURTHER WORKFLOW RUNS ***************************
-# https://github.com/peter-evans/create-pull-request/blob/main/docs/concepts-guidelines.md#triggering-further-workflow-runs
-# use  Cargo audit for dependencies!
 jobs:
   update_minor_dependencies:
     timeout-minutes: 10
@@ -78,11 +75,10 @@ jobs:
           base: 'dev'
           commit-message: 'dependencies: Upgrade RUST packages (automated)'
           body: |
-            ### ⚠ Importante leer antes de hacer merge a dev
-            >Cerrar esta **PR** y abrirla de nuevo para que corran las **actions**
-            de **code-quality-check**.
+            ### ⚠ Important to read before merging to dev
+            >Close this **PR** and reopen it to trigger the **code-quality-check** actions.
 
-            >Luego _merge_ a **dev**.
+            >Then _merge_ to **dev**.
 
-            ### Cambios de versiones (todas las dependencias)
+            ### Version changes (all dependencies)
             ${{ env.CHANGE_LOG }}
