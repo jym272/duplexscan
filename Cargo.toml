@@ -18,7 +18,6 @@ panic = "abort"
 strip = "symbols"
 opt-level = 3
 
-# This is the main binary
 [[bin]]
 name = "duplexscan"
 path = "src/main.rs"
