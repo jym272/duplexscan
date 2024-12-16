@@ -1,0 +1,6 @@
+/target
+*.csv
+!input.csv
+.idea
+todo.txt
+duplexscan

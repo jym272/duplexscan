@@ -1,0 +1,104 @@
+name: reusable-code_quality_check
+on:
+  workflow_call:
+
+env:
+  CARGO_INCREMENTAL: 0
+  FORCE_COLOR: 3
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  lint:
+    timeout-minutes: 2
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          ref: ${{ github.event.pull_request.head.ref }}
+
+      - name: Prettier Build (background)
+        run: |
+          nohup make prettier-build > /dev/null 2>&1 &
+
+      - name: Setup Rust toolchain
+        uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          components: clippy, rustfmt
+
+      - name: Format
+        run: make format
+
+      - name: Lint fix
+        run: make lint-fix
+
+      - name: Prettier additional files
+        run: |
+          make prettier
+
+      - name: Check if files changed
+        id: check-if-files-changed
+        continue-on-error: true
+        run: |
+          git diff --quiet
+      - name: Commit the changes
+        if: ${{ steps.check-if-files-changed.outcome == 'failure' }}
+        uses: EndBug/add-and-commit@v9
+        with:
+          author_name: github-actions[bot]
+          author_email: github-actions[bot]@users.noreply.github.com
+          default_author: github_actor
+          message: 'Commit from GitHub Actions (lint_fix)'
+          fetch: false
+          pathspec_error_handling: ignore
+          push: true
+
+  check:
+    name: Compile-time error checking
+    timeout-minutes: 2
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Rust toolchain
+        uses: actions-rust-lang/setup-rust-toolchain@v1
+
+      - name: Check
+        run: make check
+
+  unit-test:
+    needs: [check]
+    timeout-minutes: 2
+    runs-on: ubuntu-latest
+    environment: testing
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Rust toolchain
+        uses: actions-rust-lang/setup-rust-toolchain@v1
+
+      - name: Compile tests
+        run: make test-compile
+
+      - name: Run tests
+        id: run-tests
+        run: |
+          make test
+
+  smoke-test:
+    needs: [check]
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    environment: testing
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run smoke test
+        run: |
+          bash ./scripts/smoke-test.sh

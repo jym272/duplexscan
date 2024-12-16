@@ -1,0 +1,29 @@
+name: Deployment to package registry
+
+on:
+  push:
+    branches: ['dev', 'staging', 'main']
+
+jobs:
+  code_quality_check:
+    permissions:
+      contents: write
+      pull-requests: write
+    uses: ./.github/workflows/code-quality-check.yml
+    secrets: inherit
+
+  setup-build-publish-deploy:
+    timeout-minutes: 8
+    needs: [code_quality_check]
+    name: Setup, Build, Publish, and Deploy
+    runs-on: ubuntu-latest
+    environment: production
+    permissions:
+      contents: 'read'
+      id-token: 'write'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Deploy
+        run: |
+          echo "Deploying to brew for example"
