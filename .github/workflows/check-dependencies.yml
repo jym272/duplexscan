@@ -1,8 +1,9 @@
 name: check_minor_dependencies
 on:
   workflow_dispatch:
-  schedule:
-    - cron: '30 17 1,15 * *' # 5:30 PM UTC on the 1st and 15th of every month
+  # if is goint to be activated, it needs policies of write to be able to create the PR 
+  # schedule:
+  #  - cron: '30 17 1,15 * *' # 5:30 PM UTC on the 1st and 15th of every month
 
 env:
   CARGO_INCREMENTAL: 0
